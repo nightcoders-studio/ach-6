@@ -1,0 +1,409 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  MAHASISWA
+  MITRA
+  SUPERUSER
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum MitraVerificationLevel {
+  BASIC
+  BUSINESS
+  TRUSTED
+}
+
+enum ProjectStatus {
+  DRAFT
+  OPEN_FOR_BID
+  BID_SELECTED
+  WAITING_PAYMENT
+  PAYMENT_SECURED
+  IN_PROGRESS
+  SUBMITTED
+  REVISION_REQUESTED
+  WAITING_APPROVAL
+  APPROVED
+  DISBURSEMENT_PROCESSING
+  COMPLETED
+  DISPUTED
+  CANCELLED
+}
+
+enum BidStatus {
+  SUBMITTED
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+enum PaymentStatus {
+  UNPAID
+  PENDING
+  SECURED
+  FAILED
+  EXPIRED
+  REFUNDED
+}
+
+enum PayoutStatus {
+  NOT_REQUESTED
+  PROCESSING
+  PAID_SUCCESSFULLY
+  FAILED
+  DISPUTED
+}
+
+enum StudentPlan {
+  BASIC
+  PRO
+}
+
+model User {
+  id               String               @id @default(uuid())
+  name             String
+  email            String               @unique
+  password_hash    String
+  role             UserRole
+  phone            String?
+  status           String               @default("ACTIVE") // Or an enum if specified
+  created_at       DateTime             @default(now())
+  updated_at       DateTime             @updatedAt
+  
+  student_profile  StudentProfile?
+  mitra_profile    MitraProfile?
+  sent_discussions ProjectDiscussion[]
+  opened_disputes  Dispute[]
+}
+
+model StudentProfile {
+  id                  String               @id @default(uuid())
+  user_id             String               @unique
+  user                User                 @relation(fields: [user_id], references: [id])
+  nim                 String
+  university          String
+  study_program       String
+  semester            Int
+  domicile            String?
+  ktm_file_url        String?
+  krs_file_url        String?
+  signature_url       String?
+  verification_status VerificationStatus   @default(PENDING)
+  verification_note   String?
+  plan                StudentPlan          @default(BASIC)
+  verified_at         DateTime?
+
+  bank_accounts       StudentBankAccount[]
+  skills              StudentSkill[]
+  bids                Bid[]
+  project_assignments ProjectAssignment[]
+  project_submissions ProjectSubmission[]
+  payouts             Payout[]
+  certificates        Certificate[]
+  portfolios          Portfolio[]
+  skpi_evidence_packs SkpiEvidencePack[]
+}
+
+model StudentBankAccount {
+  id                  String             @id @default(uuid())
+  student_id          String
+  student             StudentProfile     @relation(fields: [student_id], references: [id])
+  bank_name           String
+  account_number      String
+  account_holder_name String
+  verification_status VerificationStatus @default(PENDING)
+  created_at          DateTime           @default(now())
+}
+
+model MitraProfile {
+  id                  String                 @id @default(uuid())
+  user_id             String                 @unique
+  user                User                   @relation(fields: [user_id], references: [id])
+  mitra_name          String
+  mitra_type          String // e.g., UMKM, Komunitas
+  responsible_person  String
+  position            String
+  address             String?
+  description         String?
+  social_media_url    String?
+  website_url         String?
+  nib_number          String?
+  nib_file_url        String?
+  business_photo_url  String?
+  logo_url            String?
+  signature_url       String?
+  stamp_url           String?
+  verification_level  MitraVerificationLevel @default(BASIC)
+  verification_status VerificationStatus     @default(PENDING)
+  verification_note   String?
+  verified_at         DateTime?
+
+  projects            Project[]
+  payments            Payment[]
+  signed_certificates Certificate[]
+}
+
+model Skill {
+  id              String            @id @default(uuid())
+  name            String            @unique
+  category        String
+  
+  student_skills  StudentSkill[]
+  project_skills  ProjectSkill[]
+}
+
+model StudentSkill {
+  id         String         @id @default(uuid())
+  student_id String
+  student    StudentProfile @relation(fields: [student_id], references: [id])
+  skill_id   String
+  skill      Skill          @relation(fields: [skill_id], references: [id])
+  level      String // e.g., BEGINNER, INTERMEDIATE, EXPERT
+}
+
+model Project {
+  id                  String             @id @default(uuid())
+  mitra_id            String
+  mitra               MitraProfile       @relation(fields: [mitra_id], references: [id])
+  title               String
+  description         String
+  category            String
+  min_price           Int
+  max_price           Int
+  deadline_days       Int
+  revision_limit      Int
+  revision_used       Int                @default(0)
+  status              ProjectStatus      @default(DRAFT)
+  fair_work_score     Int?
+  published_at        DateTime?
+  created_at          DateTime           @default(now())
+  updated_at          DateTime           @updatedAt
+
+  scope               ProjectScope?
+  skills_required     ProjectSkill[]
+  bids                Bid[]
+  assignments         ProjectAssignment[] // One to many technically but practically often 1
+  discussions         ProjectDiscussion[]
+  revisions           Revision[]
+  submissions         ProjectSubmission[]
+  reviews             Review[]
+  payments            Payment[]
+  payouts             Payout[]
+  certificates        Certificate[]
+  portfolios          Portfolio[]
+  skpi_evidence_packs SkpiEvidencePack[]
+  disputes            Dispute[]
+}
+
+model ProjectScope {
+  id                            String  @id @default(uuid())
+  project_id                    String  @unique
+  project                       Project @relation(fields: [project_id], references: [id])
+  included_scope                String
+  excluded_scope                String?
+  output_format                 String
+  output_quantity               Int
+  completion_criteria           String
+  required_materials_from_mitra String?
+}
+
+model ProjectSkill {
+  id         String  @id @default(uuid())
+  project_id String
+  project    Project @relation(fields: [project_id], references: [id])
+  skill_id   String
+  skill      Skill   @relation(fields: [skill_id], references: [id])
+}
+
+model Bid {
+  id               String         @id @default(uuid())
+  project_id       String
+  project          Project        @relation(fields: [project_id], references: [id])
+  student_id       String
+  student          StudentProfile @relation(fields: [student_id], references: [id])
+  bid_price        Int
+  estimated_days   Int
+  proposal_message String
+  portfolio_link   String?
+  match_score      Int?
+  status           BidStatus      @default(SUBMITTED)
+  created_at       DateTime       @default(now())
+
+  assignments      ProjectAssignment[]
+}
+
+model ProjectAssignment {
+  id          String         @id @default(uuid())
+  project_id  String
+  project     Project        @relation(fields: [project_id], references: [id])
+  bid_id      String
+  bid         Bid            @relation(fields: [bid_id], references: [id])
+  student_id  String
+  student     StudentProfile @relation(fields: [student_id], references: [id])
+  assigned_at DateTime       @default(now())
+  status      String         @default("ACTIVE")
+}
+
+model ProjectDiscussion {
+  id                     String   @id @default(uuid())
+  project_id             String
+  project                Project  @relation(fields: [project_id], references: [id])
+  sender_id              String
+  sender                 User     @relation(fields: [sender_id], references: [id])
+  message                String
+  attachment_url         String?
+  sender_role            UserRole
+  hidden_after_completed Boolean  @default(false)
+  created_at             DateTime @default(now())
+}
+
+model Revision {
+  id              String   @id @default(uuid())
+  project_id      String
+  project         Project  @relation(fields: [project_id], references: [id])
+  requested_by    String // The User ID of the Mitra
+  revision_number Int
+  revision_note   String
+  attachment_url  String?
+  status          String   @default("PENDING") // PENDING, SUBMITTED
+  requested_at    DateTime @default(now())
+  submitted_at    DateTime?
+}
+
+model ProjectSubmission {
+  id              String         @id @default(uuid())
+  project_id      String
+  project         Project        @relation(fields: [project_id], references: [id])
+  student_id      String
+  student         StudentProfile @relation(fields: [student_id], references: [id])
+  file_url        String?
+  result_link     String?
+  submission_note String?
+  status          String         @default("SUBMITTED") // SUBMITTED, APPROVED, REVISION_REQUESTED
+  submitted_at    DateTime       @default(now())
+}
+
+model Review {
+  id                  String   @id @default(uuid())
+  project_id          String
+  project             Project  @relation(fields: [project_id], references: [id])
+  reviewer_id         String // Mitra User ID
+  reviewed_student_id String // Student User ID
+  rating              Int
+  testimonial         String?
+  created_at          DateTime @default(now())
+}
+
+model Payment {
+  id                 String               @id @default(uuid())
+  project_id         String
+  project            Project              @relation(fields: [project_id], references: [id])
+  mitra_id           String
+  mitra              MitraProfile         @relation(fields: [mitra_id], references: [id])
+  amount             Int
+  gateway            String               @default("MIDTRANS")
+  order_id           String               @unique
+  transaction_id     String?
+  payment_status     PaymentStatus        @default(UNPAID)
+  payment_method     String?
+  paid_at            DateTime?
+  created_at         DateTime             @default(now())
+
+  webhook_logs       PaymentWebhookLog[]
+}
+
+model PaymentWebhookLog {
+  id                 String   @id @default(uuid())
+  payment_id         String
+  payment            Payment  @relation(fields: [payment_id], references: [id])
+  gateway            String
+  event_type         String
+  transaction_status String
+  payload            String // JSON stringified payload
+  received_at        DateTime @default(now())
+}
+
+model Payout {
+  id                         String         @id @default(uuid())
+  project_id                 String
+  project                    Project        @relation(fields: [project_id], references: [id])
+  student_id                 String
+  student                    StudentProfile @relation(fields: [student_id], references: [id])
+  amount                     Int
+  destination_bank           String
+  destination_account_masked String
+  reference_id               String?
+  payout_status              PayoutStatus   @default(NOT_REQUESTED)
+  failure_reason             String?
+  processed_at               DateTime?
+  paid_at                    DateTime?
+}
+
+model Certificate {
+  id                   String         @id @default(uuid())
+  project_id           String         @unique
+  project              Project        @relation(fields: [project_id], references: [id])
+  student_id           String
+  student              StudentProfile @relation(fields: [student_id], references: [id])
+  mitra_id             String
+  mitra                MitraProfile   @relation(fields: [mitra_id], references: [id])
+  certificate_number   String         @unique
+  certificate_file_url String
+  qr_verification_url  String
+  status               String         @default("ACTIVE")
+  generated_at         DateTime       @default(now())
+}
+
+model Portfolio {
+  id                  String         @id @default(uuid())
+  student_id          String
+  student             StudentProfile @relation(fields: [student_id], references: [id])
+  project_id          String         @unique
+  project             Project        @relation(fields: [project_id], references: [id])
+  title               String
+  problem_summary     String
+  solution_summary    String
+  result_link         String?
+  portfolio_page_url  String
+  qr_verification_url String
+  visibility          String         @default("PUBLIC")
+  created_at          DateTime       @default(now())
+}
+
+model SkpiEvidencePack {
+  id                   String         @id @default(uuid())
+  project_id           String         @unique
+  project              Project        @relation(fields: [project_id], references: [id])
+  student_id           String
+  student              StudentProfile @relation(fields: [student_id], references: [id])
+  evidence_file_url    String
+  recommended_category String
+  qr_verification_url  String
+  generated_at         DateTime       @default(now())
+}
+
+model Dispute {
+  id             String   @id @default(uuid())
+  project_id     String
+  project        Project  @relation(fields: [project_id], references: [id])
+  opened_by      String // User ID
+  opener         User     @relation(fields: [opened_by], references: [id])
+  reason         String
+  evidence_url   String?
+  status         String   @default("OPEN") // OPEN, REVIEWING, RESOLVED
+  admin_decision String?
+  created_at     DateTime @default(now())
+  resolved_at    DateTime?
+}
