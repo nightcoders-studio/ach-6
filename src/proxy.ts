@@ -6,7 +6,7 @@ import { getSession } from "./lib/auth";
 const publicRoutes = ["/", "/auth/login", "/auth/register", "/pricing"];
 const protectedRoutes = ["/dashboard", "/onboarding", "/projects/create", "/projects/bid"];
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   // 2. Check if the current route is protected or public
   const path = req.nextUrl.pathname;
   const isProtectedRoute = protectedRoutes.some((route) => path.startsWith(route));
