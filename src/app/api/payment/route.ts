@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
     }
 
     // SIMULASI PEMBAYARAN: Langsung anggap sukses tanpa memanggil Midtrans
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // 1. Update Payment
       await tx.payment.update({
         where: { id: payment.id },

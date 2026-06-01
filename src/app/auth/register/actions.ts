@@ -1,6 +1,7 @@
 "use server";
 
 
+import type { Prisma } from "@prisma/client";
 import { registerMahasiswaSchema, registerMitraSchema } from "@/lib/zod";
 import { prisma } from "@/lib/prisma";
 import { createSession } from "@/lib/auth";
@@ -35,7 +36,7 @@ export async function registerMahasiswaAction(prevState: unknown, formData: Form
 
     const hashedPassword = await bcrypt.hash(validatedFields.data.password, 10);
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const createdUser = await tx.user.create({
         data: {
           email: validatedFields.data.email,
@@ -103,7 +104,7 @@ export async function registerMitraAction(prevState: unknown, formData: FormData
 
     const hashedPassword = await bcrypt.hash(validatedFields.data.password, 10);
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const createdUser = await tx.user.create({
         data: {
           email: validatedFields.data.email,

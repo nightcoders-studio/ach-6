@@ -1,5 +1,6 @@
 "use server";
 
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
@@ -102,7 +103,7 @@ export async function approveProjectAction(prevState: unknown, formData: FormDat
 
     if (!project) throw new Error("Project tidak ditemukan");
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // 1. Update project status and signature
       await tx.project.update({
         where: { id: project_id },
@@ -150,7 +151,7 @@ export async function requestRevisionAction(prevState: unknown, formData: FormDa
       return { error: "Batas revisi telah tercapai" };
     }
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       await tx.revision.create({
         data: {
           project_id,

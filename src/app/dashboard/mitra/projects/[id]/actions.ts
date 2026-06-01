@@ -1,5 +1,6 @@
 "use server";
 
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -33,7 +34,7 @@ export async function selectBidAction(formData: FormData) {
     }
 
     // Update the selected bid to ACCEPTED, others to REJECTED (optional, but let's just mark the winner)
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Mark all bids as REJECTED first
       await tx.bid.updateMany({
         where: { project_id },

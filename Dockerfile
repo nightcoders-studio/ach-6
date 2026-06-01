@@ -15,6 +15,7 @@ FROM base AS builder
 COPY . .
 # Mengambil node_modules dari stage deps agar proses build Next.js bisa berjalan
 COPY --from=deps /app/node_modules ./node_modules
+RUN npx prisma generate
 RUN npm run build
 
 # --- STAGE 4: Runner (Production) ---

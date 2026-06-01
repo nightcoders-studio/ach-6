@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
@@ -24,7 +25,7 @@ export async function POST(req: Request) {
       ? account_number.slice(-4).padStart(account_number.length, "*")
       : "****";
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       await tx.payout.create({
         data: {
           project_id,
