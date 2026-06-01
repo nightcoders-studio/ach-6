@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { PayoutDialog } from "@/components/admin/PayoutDialog";
 import { VerifyButtons } from "@/components/admin/VerifyButtons";
+import { MitraDetailDialog } from "@/components/admin/MitraDetailDialog";
 
 export default async function SuperuserDashboard() {
   const session = await getSession();
@@ -90,7 +91,10 @@ export default async function SuperuserDashboard() {
                       </div>
                       <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">Pending</Badge>
                     </div>
-                    <VerifyButtons id={mitra.id} type="MITRA" />
+                    <div className="flex flex-col gap-2">
+                      <MitraDetailDialog mitra={mitra} />
+                      <VerifyButtons id={mitra.id} type="MITRA" />
+                    </div>
                   </div>
                 ))
               )}
