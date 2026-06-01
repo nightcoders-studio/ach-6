@@ -43,9 +43,6 @@ export default function StudentSidebar({
       <div className="space-y-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-600/30 group-hover:scale-105 transition-transform">
-            <Zap className="w-4.5 h-4.5 text-white" />
-          </div>
           <span className="font-black text-lg tracking-tight text-white">
             SkillBridge<span className="text-indigo-500">.</span>
           </span>
