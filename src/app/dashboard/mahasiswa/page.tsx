@@ -62,9 +62,22 @@ export default async function MahasiswaDashboardPage() {
                         <Badge variant="outline" className="text-xs text-indigo-600 border-indigo-200">{assignment.project.status}</Badge>
                       </div>
                     </div>
-                    <Link href={`/dashboard/mahasiswa/projects/${assignment.project.id}`}>
-                      <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 w-full sm:w-auto">Masuk Ruang Kerja</Button>
-                    </Link>
+                    <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+                      {assignment.status === "COMPLETED" ? (
+                        <>
+                          <Link href={`/certificates/${assignment.project.id}`}>
+                            <Button size="sm" variant="outline" className="w-full sm:w-auto text-green-700 border-green-200 hover:bg-green-50">Sertifikat</Button>
+                          </Link>
+                          <Link href={`/portfolios/${assignment.project.id}`}>
+                            <Button size="sm" variant="outline" className="w-full sm:w-auto text-indigo-700 border-indigo-200 hover:bg-indigo-50">Portfolio</Button>
+                          </Link>
+                        </>
+                      ) : (
+                        <Link href={`/dashboard/mahasiswa/projects/${assignment.project.id}`}>
+                          <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 w-full sm:w-auto">Masuk Ruang Kerja</Button>
+                        </Link>
+                      )}
+                    </div>
                   </div>
                 ))
               )}

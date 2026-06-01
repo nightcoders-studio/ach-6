@@ -21,6 +21,15 @@ export default async function SuperuserDashboard() {
     include: { user: true },
   });
 
+  const completedProjects = await prisma.project.findMany({
+    where: { status: "COMPLETED" },
+    include: { 
+      mitra: { include: { user: true } },
+      assignments: { include: { student: { include: { user: true } } } },
+      payments: { where: { payment_status: "SECURED" } }
+    }
+  });
+
   return (
     <div className="min-h-screen bg-slate-50 p-8">
       <div className="max-w-6xl mx-auto space-y-8">
@@ -90,6 +99,44 @@ export default async function SuperuserDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Payout Queue */}
+        <Card className="shadow-sm border-slate-200 bg-white">
+          <CardHeader className="border-b border-slate-100 pb-4">
+            <CardTitle className="text-lg">Antrean Pencairan Dana (Payout)</CardTitle>
+            <CardDescription>Project yang sudah selesai dan dana escrow siap dicairkan ke Mahasiswa.</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-4 space-y-4">
+            {completedProjects.length === 0 ? (
+              <p className="text-sm text-slate-500 text-center py-4">Tidak ada antrean pencairan dana.</p>
+            ) : (
+              completedProjects.map((project) => {
+                const payment = project.payments[0];
+                const assignment = project.assignments[0];
+                if (!payment || !assignment) return null;
+
+                return (
+                  <div key={project.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 border border-slate-100 rounded-lg gap-4">
+                    <div>
+                      <p className="font-semibold text-slate-900">{project.title}</p>
+                      <p className="text-sm text-slate-500">Pekerja: {assignment.student.user.name}</p>
+                      <p className="text-xs text-slate-400 mt-1">Klien: {project.mitra.user.name}</p>
+                    </div>
+                    <div className="flex flex-col items-end gap-2 shrink-0">
+                      <p className="font-bold text-indigo-600">Rp {payment.net_amount.toLocaleString("id-ID")}</p>
+                      <form action="/api/payout/simulate" method="POST">
+                        <input type="hidden" name="project_id" value={project.id} />
+                        <input type="hidden" name="student_id" value={assignment.student.id} />
+                        <input type="hidden" name="amount" value={payment.net_amount} />
+                        <Button type="submit" size="sm" className="bg-slate-900 hover:bg-slate-800">Simulasi Cairkan Dana</Button>
+                      </form>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
