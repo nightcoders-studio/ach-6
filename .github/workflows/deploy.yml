@@ -1,0 +1,37 @@
+name: Deploy to Homelab
+
+on:
+  push:
+    branches: [ "master", "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # Langkah 1: Hubungkan ke jaringan lokal via Twingate
+    - name: Setup Twingate
+      uses: twingate/github-action@v1
+      with:
+        service-key: ${{ secrets.TWINGATE_SERVICE_KEY }}
+
+    # # Langkah 2: Build Docker Image (Contoh untuk Backend)
+    # - name: Build Docker Image
+    #   run: |
+    #     docker build -t protoprime-backend ./backend
+    #     # Jika ingin pakai registry (Docker Hub/GHCR), lakukan docker push di sini
+
+    # Langkah 3: Deploy via SSH ke IP Lokal
+    - name: Deploy to Server via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: 192.168.0.111
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd /home/samvivan/serverprojects/hackathon/ach-6
+          git pull
+          docker compose up -d --build
