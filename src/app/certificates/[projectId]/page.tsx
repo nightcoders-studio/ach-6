@@ -65,9 +65,16 @@ export default async function CertificatePage(props: { params: Promise<{ project
         </p>
 
         <div className="flex justify-between w-full max-w-3xl mt-auto pt-12">
-          <div className="flex flex-col items-center">
-            <div className="w-40 border-b border-slate-400 mb-2"></div>
-            <p className="font-semibold text-slate-900">{project.mitra.responsible_person || "Perwakilan Mitra"}</p>
+          <div className="flex flex-col items-center relative">
+            <div className="w-40 h-16 flex items-end justify-center mb-1">
+              {project.mitra_signature ? (
+                <img src={project.mitra_signature} alt="Signature" className="max-h-16 max-w-full object-contain" />
+              ) : (
+                <div className="w-full border-b border-slate-400 mb-2"></div>
+              )}
+            </div>
+            {project.mitra_signature && <div className="w-40 border-b border-slate-400 mb-1"></div>}
+            <p className="font-semibold text-slate-900 mt-1">{project.mitra.responsible_person || "Perwakilan Mitra"}</p>
             <p className="text-sm text-slate-500">{mitraName}</p>
           </div>
 
@@ -79,9 +86,16 @@ export default async function CertificatePage(props: { params: Promise<{ project
             <p className="text-xs text-slate-400">Tanggal: {issueDate}</p>
           </div>
 
-          <div className="flex flex-col items-center">
-            <div className="w-40 border-b border-slate-400 mb-2"></div>
-            <p className="font-semibold text-slate-900">Admin SkillBridge</p>
+          <div className="flex flex-col items-center relative">
+            <div className="w-40 h-16 flex items-end justify-center mb-1">
+              {project.admin_signature ? (
+                <img src={project.admin_signature} alt="Admin Signature" className="max-h-16 max-w-full object-contain" />
+              ) : (
+                <div className="w-full border-b border-slate-400 mb-2"></div>
+              )}
+            </div>
+            {project.admin_signature && <div className="w-40 border-b border-slate-400 mb-1"></div>}
+            <p className="font-semibold text-slate-900 mt-1">Admin SkillBridge</p>
             <p className="text-sm text-slate-500">Platform Escrow & Validation</p>
           </div>
         </div>

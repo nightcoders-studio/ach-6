@@ -9,10 +9,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { project_id, student_id, amount, bank_name, account_number } = await req.json();
+    const { project_id, student_id, amount, bank_name, account_number, admin_signature } = await req.json();
 
-    if (!project_id || !student_id || isNaN(amount)) {
-      return NextResponse.json({ error: "Invalid data" }, { status: 400 });
+    if (!project_id || !student_id || isNaN(amount) || !admin_signature) {
+      return NextResponse.json({ error: "Invalid data atau TTD kosong" }, { status: 400 });
     }
 
     // SIMULASI: Meniru delay koneksi ke Payment Gateway (seperti Midtrans Iris / Xendit)
@@ -37,6 +37,11 @@ export async function POST(req: Request) {
           processed_at: new Date(),
           paid_at: new Date(),
         }
+      });
+      
+      await tx.project.update({
+        where: { id: project_id },
+        data: { admin_signature }
       });
     });
 

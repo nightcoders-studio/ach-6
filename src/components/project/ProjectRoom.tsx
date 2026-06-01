@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useRef, useEffect } from "react";
+import { useActionState, useRef, useEffect, useState } from "react";
 import { sendChatAction } from "@/app/actions/project";
+import { SignaturePad } from "@/components/project/SignaturePad";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +36,7 @@ export function ProjectRoom({
   const [submitState, submitAction, isSubmitPending] = useActionState(submitProjectWorkAction, null);
   const [approveState, approveAction, isApprovePending] = useActionState(approveProjectAction, null);
   const [revisionState, revisionAction, isRevisionPending] = useActionState(requestRevisionAction, null);
+  const [signature, setSignature] = useState("");
   
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -125,9 +127,6 @@ export function ProjectRoom({
                 <a href={`/certificates/${projectId}`} className="flex items-center justify-center w-full py-2.5 px-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors text-sm shadow-sm">
                   <FileText className="w-4 h-4 mr-2" /> Unduh Sertifikat
                 </a>
-                <a href={`/portfolios/${projectId}`} className="flex items-center justify-center w-full py-2.5 px-4 bg-white text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-colors text-sm border border-slate-200 shadow-sm">
-                  <FileText className="w-4 h-4 mr-2" /> Lihat Portofolio
-                </a>
               </div>
             )}
 
@@ -156,8 +155,8 @@ export function ProjectRoom({
               </div>
             )}
 
-            {/* Mitra View: Review Submission */}
-            {role === "MITRA" && latestSubmission && projectStatus !== "COMPLETED" && (
+            {/* Submission Result (Always visible if exists) */}
+            {latestSubmission && (
               <div className="space-y-4">
                 <h3 className="font-semibold text-slate-900">Hasil Kerja Terbaru</h3>
                 <div className="p-4 bg-slate-50 border border-slate-100 rounded-lg space-y-3">
@@ -172,11 +171,18 @@ export function ProjectRoom({
                     </div>
                   )}
 
-                  {latestSubmission.status === "SUBMITTED" && (
+                  {role === "MITRA" && projectStatus !== "COMPLETED" && latestSubmission.status === "SUBMITTED" && (
                     <div className="pt-3 border-t border-slate-200 mt-3 space-y-2">
-                      <form action={approveAction}>
+                      <form action={approveAction} className="space-y-4 border border-indigo-100 bg-white p-3 rounded-md">
+                        <div>
+                          <p className="text-xs text-slate-500 mb-2 font-medium">Tanda Tangan Digital (Diperlukan untuk Sertifikat)</p>
+                          <SignaturePad onSignatureChange={setSignature} />
+                        </div>
                         <input type="hidden" name="project_id" value={projectId} />
-                        <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isApprovePending}>Setujui & Selesaikan</Button>
+                        <input type="hidden" name="signature" value={signature} />
+                        <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isApprovePending || !signature}>
+                          Setujui & Selesaikan
+                        </Button>
                       </form>
                       
                       {remainingRevisions > 0 ? (

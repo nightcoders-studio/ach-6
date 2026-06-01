@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Landmark, ArrowRightLeft, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { SignaturePad } from "@/components/project/SignaturePad";
 
 interface PayoutDialogProps {
   projectId: string;
@@ -39,6 +40,7 @@ export function PayoutDialog({
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [referenceId, setReferenceId] = useState("");
+  const [signature, setSignature] = useState("");
   const router = useRouter();
 
   const handlePayout = async () => {
@@ -53,6 +55,7 @@ export function PayoutDialog({
           amount: amount,
           bank_name: bankName || "N/A",
           account_number: accountNumber || "0000",
+          admin_signature: signature,
         }),
       });
 
@@ -88,6 +91,7 @@ export function PayoutDialog({
       if (!open) {
         setIsSuccess(false);
         setReferenceId("");
+        setSignature("");
       }
     }}>
       <DialogTrigger asChild>
@@ -118,7 +122,7 @@ export function PayoutDialog({
                 Tinjau rincian transfer sebelum memproses dana ke rekening mahasiswa.
               </DialogDescription>
             </DialogHeader>
-            <div className="py-6 space-y-6">
+            <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto px-1">
               <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div className="flex flex-col">
                   <span className="text-xs text-slate-500">Dari Escrow</span>
@@ -155,10 +159,15 @@ export function PayoutDialog({
                 <span className="text-3xl font-black text-indigo-600 tracking-tight">Rp {amount.toLocaleString("id-ID")}</span>
               </div>
 
-              {!hasBankAccount && (
+              {!hasBankAccount ? (
                 <div className="bg-red-50 text-red-700 p-3 rounded-md text-sm flex items-start">
                   <AlertCircle className="w-5 h-5 mr-2 shrink-0 mt-0.5" />
                   Mahasiswa ini belum mendaftarkan rekening bank. Pencairan tidak dapat dilakukan.
+                </div>
+              ) : (
+                <div className="border border-indigo-100 bg-white p-3 rounded-md shadow-sm">
+                  <p className="text-xs text-slate-500 mb-2 font-medium">Tanda Tangan Admin (Otorisasi Pencairan)</p>
+                  <SignaturePad onSignatureChange={setSignature} />
                 </div>
               )}
             </div>
@@ -166,7 +175,7 @@ export function PayoutDialog({
               <Button variant="outline" onClick={() => setIsOpen(false)} disabled={isProcessing}>Batal</Button>
               <Button 
                 onClick={handlePayout} 
-                disabled={isProcessing || !hasBankAccount} 
+                disabled={isProcessing || !hasBankAccount || !signature} 
                 className="bg-indigo-600 hover:bg-indigo-700 w-[160px]"
               >
                 {isProcessing ? (

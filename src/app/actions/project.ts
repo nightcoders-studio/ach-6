@@ -89,16 +89,27 @@ export async function approveProjectAction(prevState: any, formData: FormData) {
   if (!session || session.role !== "MITRA") throw new Error("Unauthorized");
 
   const project_id = formData.get("project_id") as string;
+  const signature = formData.get("signature") as string;
 
   try {
     const profile = await prisma.mitraProfile.findUnique({ where: { user_id: session.id } });
     if (!profile) throw new Error("Profil tidak ditemukan");
 
+    const project = await prisma.project.findFirst({
+      where: { id: project_id, mitra_id: profile.id },
+      include: { assignments: true }
+    });
+
+    if (!project) throw new Error("Project tidak ditemukan");
+
     await prisma.$transaction(async (tx) => {
-      // 1. Update project status
+      // 1. Update project status and signature
       await tx.project.update({
-        where: { id: project_id, mitra_id: profile.id },
-        data: { status: "COMPLETED" }
+        where: { id: project_id },
+        data: { 
+          status: "COMPLETED",
+          mitra_signature: signature 
+        }
       });
 
       // 2. Update assignment status

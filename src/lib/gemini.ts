@@ -3,7 +3,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "dummy_key");
 
 export async function generateProjectBrief(mitraPrompt: string) {
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // or gemini-1.5-flash
+  const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite" });
 
   const prompt = `
 Anda adalah asisten AI ahli dalam menulis Project Brief profesional.

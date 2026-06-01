@@ -36,7 +36,7 @@ export default function StudentSidebar({
   const menuItems = [
     { name: "Dashboard", href: "/dashboard/mahasiswa", icon: LayoutDashboard },
     { name: "Eksplor Project", href: "/projects", icon: Compass },
-    { name: "Profil Saya", href: "/onboarding/mahasiswa", icon: User },
+    { name: "Profil Saya", href: "/dashboard/mahasiswa/profile", icon: User },
   ];
 
   const sidebarContent = (

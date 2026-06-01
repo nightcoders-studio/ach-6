@@ -185,6 +185,8 @@ model Project {
   deadline_days       Int
   revision_limit      Int
   revision_used       Int                @default(0)
+  mitra_signature     String?            @db.Text
+  admin_signature     String?            @db.Text
   status              ProjectStatus      @default(DRAFT)
   fair_work_score     Int?
   published_at        DateTime?
