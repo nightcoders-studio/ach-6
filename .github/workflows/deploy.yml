@@ -1,0 +1,53 @@
+name: Deploy to Homelab
+
+on:
+  push:
+    branches: [ "master", "main" ]
+
+jobs:
+  # --- JOB 1: VERIFIKASI & TES BUILD ---
+  validate:
+    name: Verify & Test Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js (Optional, untuk speed up caching jika mau)
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+
+    # Menjalankan simulasi build tiruan di runner GitHub untuk memastikan tidak ada error kodingan
+    - name: Run Test Docker Build
+      run: |
+        docker build . -f Dockerfile
+
+  # --- JOB 2: DEPLOY (Hanya jalan jika JOB 1 Sukses) ---
+  deploy:
+    name: Deploy to Server
+    runs-on: ubuntu-latest
+    needs: validate # CRITICAL: Menjamin job ini di-skip total jika job 'validate' gagal/error
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # Langkah 1: Hubungkan ke jaringan lokal via Twingate
+    - name: Setup Twingate
+      uses: twingate/github-action@v1
+      with:
+        service-key: ${{ secrets.TWINGATE_SERVICE_KEY }}
+
+    # Langkah 2: Deploy via SSH ke IP Lokal
+    - name: Deploy to Server via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: 192.168.0.111
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd /home/samvivan/serverprojects/hackathon/ach-6
+          git pull
+          docker compose up -d --build
