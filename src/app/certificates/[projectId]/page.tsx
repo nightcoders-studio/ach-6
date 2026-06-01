@@ -1,8 +1,9 @@
+/* eslint-disable @next/next/no-img-element */
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
 import { PrintButton } from "@/components/PrintButton";
-import Image from "next/image";
+
 
 export default async function CertificatePage(props: { params: Promise<{ projectId: string }> }) {
   const { projectId } = await props.params;
@@ -68,7 +69,7 @@ export default async function CertificatePage(props: { params: Promise<{ project
           <div className="flex flex-col items-center relative">
             <div className="w-40 h-16 flex items-end justify-center mb-1">
               {project.mitra_signature ? (
-                <img src={project.mitra_signature} alt="Signature" className="max-h-16 max-w-full object-contain" />
+                <img alt="Signature" src={project.mitra_signature} className="max-h-16 max-w-full object-contain" />
               ) : (
                 <div className="w-full border-b border-slate-400 mb-2"></div>
               )}
@@ -89,7 +90,7 @@ export default async function CertificatePage(props: { params: Promise<{ project
           <div className="flex flex-col items-center relative">
             <div className="w-40 h-16 flex items-end justify-center mb-1">
               {project.admin_signature ? (
-                <img src={project.admin_signature} alt="Admin Signature" className="max-h-16 max-w-full object-contain" />
+                <img alt="Admin Signature" src={project.admin_signature} className="max-h-16 max-w-full object-contain" />
               ) : (
                 <div className="w-full border-b border-slate-400 mb-2"></div>
               )}

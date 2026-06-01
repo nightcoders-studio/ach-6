@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
-export async function sendChatAction(prevState: any, formData: FormData) {
+export async function sendChatAction(prevState: unknown, formData: FormData) {
   const session = await getSession();
   if (!session) return { error: "Unauthorized" };
 
@@ -29,7 +29,7 @@ export async function sendChatAction(prevState: any, formData: FormData) {
         project_id,
         sender_id: session.id,
         message: message.trim(),
-        sender_role: session.role as any,
+        sender_role: session.role as "MAHASISWA" | "MITRA" | "SUPERUSER",
       }
     });
 
@@ -42,7 +42,7 @@ export async function sendChatAction(prevState: any, formData: FormData) {
   }
 }
 
-export async function submitProjectWorkAction(prevState: any, formData: FormData) {
+export async function submitProjectWorkAction(prevState: unknown, formData: FormData) {
   const session = await getSession();
   if (!session || session.role !== "MAHASISWA") return { error: "Unauthorized" };
 
@@ -84,7 +84,7 @@ export async function submitProjectWorkAction(prevState: any, formData: FormData
   }
 }
 
-export async function approveProjectAction(prevState: any, formData: FormData) {
+export async function approveProjectAction(prevState: unknown, formData: FormData) {
   const session = await getSession();
   if (!session || session.role !== "MITRA") throw new Error("Unauthorized");
 
@@ -132,7 +132,7 @@ export async function approveProjectAction(prevState: any, formData: FormData) {
   }
 }
 
-export async function requestRevisionAction(prevState: any, formData: FormData) {
+export async function requestRevisionAction(prevState: unknown, formData: FormData) {
   const session = await getSession();
   if (!session || session.role !== "MITRA") return { error: "Unauthorized" };
 

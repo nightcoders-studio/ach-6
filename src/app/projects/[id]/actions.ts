@@ -5,7 +5,7 @@ import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { submitBidSchema } from "@/lib/zod";
 
-export async function submitBidAction(prevState: any, formData: FormData) {
+export async function submitBidAction(prevState: unknown, formData: FormData) {
   const session = await getSession();
   if (!session || session.role !== "MAHASISWA") {
     redirect("/auth/login");

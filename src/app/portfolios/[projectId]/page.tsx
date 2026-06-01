@@ -95,7 +95,7 @@ export default async function PortfolioPage(props: { params: Promise<{ projectId
                 {submission.result_link}
               </a>
               {submission.submission_note && (
-                <p className="mt-4 text-sm text-slate-600 italic">"{submission.submission_note}"</p>
+                <p className="mt-4 text-sm text-slate-600 italic">&quot;{submission.submission_note}&quot;</p>
               )}
             </div>
           </div>

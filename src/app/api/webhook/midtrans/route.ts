@@ -50,7 +50,7 @@ export async function POST(req: Request) {
     await prisma.payment.update({
       where: { id: payment.id },
       data: {
-        payment_status: newStatus as any,
+        payment_status: newStatus as "PENDING" | "SECURED" | "FAILED" | "REFUNDED",
         transaction_id,
         payment_method: payment_type,
         paid_at: newStatus === "SECURED" ? new Date() : null,

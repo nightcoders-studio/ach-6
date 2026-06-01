@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-export async function submitMitraOnboarding(prevState: any, formData: FormData) {
+export async function submitMitraOnboarding(prevState: unknown, formData: FormData) {
   const session = await getSession();
   if (!session || session.role !== "MITRA") {
     redirect("/auth/login");
@@ -35,7 +35,7 @@ export async function submitMitraOnboarding(prevState: any, formData: FormData) 
       }
     });
 
-  } catch (error) {
+  } catch {
     return { message: "Terjadi kesalahan server saat menyimpan profil mitra." };
   }
 

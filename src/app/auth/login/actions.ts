@@ -1,13 +1,13 @@
 "use server";
 
-import { z } from "zod";
+
 import { loginSchema } from "@/lib/zod";
 import { prisma } from "@/lib/prisma";
 import { createSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
 
-export async function loginAction(prevState: any, formData: FormData) {
+export async function loginAction(prevState: unknown, formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
@@ -46,7 +46,7 @@ export async function loginAction(prevState: any, formData: FormData) {
       name: user.name,
     });
 
-  } catch (error) {
+  } catch {
     return { message: "Terjadi kesalahan server." };
   }
 

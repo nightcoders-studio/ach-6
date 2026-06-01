@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { BankAccountForm } from "./BankAccountForm";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Landmark, User, FileBadge2 } from "lucide-react";
+import { Landmark, User } from "lucide-react";
 
 export default async function MahasiswaProfilePage() {
   const session = await getSession();
@@ -14,7 +14,10 @@ export default async function MahasiswaProfilePage() {
   const profile = await prisma.studentProfile.findUnique({
     where: { user_id: session.id },
     include: {
-      bank_accounts: true
+      user: true,
+      bank_accounts: true,
+      skills: { include: { skill: true } },
+      portfolios: true
     }
   });
 
@@ -41,7 +44,7 @@ export default async function MahasiswaProfilePage() {
           <CardContent className="space-y-4">
             <div>
               <p className="text-xs text-slate-500 font-medium">Nama Lengkap</p>
-              <p className="font-semibold text-slate-900">{profile.full_name}</p>
+              <p className="font-semibold text-slate-900">{profile.user.name}</p>
             </div>
             <div>
               <p className="text-xs text-slate-500 font-medium">Universitas</p>
@@ -51,23 +54,19 @@ export default async function MahasiswaProfilePage() {
               <p className="text-xs text-slate-500 font-medium">Keahlian (Skills)</p>
               <div className="flex flex-wrap gap-2 mt-1">
                 {profile.skills && profile.skills.length > 0 ? (
-                  Array.isArray(profile.skills) ? profile.skills.map((s: string, i: number) => (
+                  profile.skills.map((s, i) => (
                     <span key={i} className="px-2 py-1 bg-indigo-50 text-indigo-700 text-xs rounded-md font-medium">
-                      {s}
+                      {s.skill.name}
                     </span>
-                  )) : (
-                    <span className="px-2 py-1 bg-indigo-50 text-indigo-700 text-xs rounded-md font-medium">
-                      {String(profile.skills)}
-                    </span>
-                  )
+                  ))
                 ) : (
                   <span className="text-sm text-slate-400">Belum diisi</span>
                 )}
               </div>
             </div>
             <div>
-              <p className="text-xs text-slate-500 font-medium">Portofolio Link</p>
-              <p className="text-sm text-indigo-600 hover:underline">{profile.portfolio_link || "Belum ada"}</p>
+              <p className="text-xs text-slate-500 font-medium">Total Portofolio</p>
+              <p className="text-sm text-indigo-600 font-medium">{profile.portfolios.length} Proyek Diselesaikan</p>
             </div>
           </CardContent>
         </Card>

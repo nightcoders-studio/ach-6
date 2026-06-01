@@ -15,7 +15,7 @@ import {
   ShieldCheck,
   ChevronRight
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
 
 interface MitraSidebarProps {
   mitraName: string;

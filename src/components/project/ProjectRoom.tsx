@@ -16,9 +16,9 @@ interface ProjectRoomProps {
   role: "MITRA" | "MAHASISWA";
   userId: string;
   projectStatus: string;
-  chats: any[];
-  submissions: any[];
-  revisions: any[];
+  chats: { id: string; sender_id: string; sender_role: string; message: string; created_at: Date | string }[];
+  submissions: { status: string; result_link: string | null; submission_note: string | null }[];
+  revisions: { id: string; revision_number: number; revision_note: string }[];
   maxRevisions: number;
 }
 
@@ -34,8 +34,8 @@ export function ProjectRoom({
 }: ProjectRoomProps) {
   const [chatState, chatAction, isChatPending] = useActionState(sendChatAction, null);
   const [submitState, submitAction, isSubmitPending] = useActionState(submitProjectWorkAction, null);
-  const [approveState, approveAction, isApprovePending] = useActionState(approveProjectAction, null);
-  const [revisionState, revisionAction, isRevisionPending] = useActionState(requestRevisionAction, null);
+  const [, approveAction, isApprovePending] = useActionState(approveProjectAction, null);
+  const [, revisionAction, isRevisionPending] = useActionState(requestRevisionAction, null);
   const [signature, setSignature] = useState("");
   
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -127,6 +127,11 @@ export function ProjectRoom({
                 <a href={`/certificates/${projectId}`} className="flex items-center justify-center w-full py-2.5 px-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors text-sm shadow-sm">
                   <FileText className="w-4 h-4 mr-2" /> Unduh Sertifikat
                 </a>
+                {role === "MAHASISWA" && (
+                  <a href={`/portfolios/${projectId}`} className="flex items-center justify-center w-full py-2.5 px-4 bg-white text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-colors text-sm border border-slate-200 shadow-sm">
+                    <FileText className="w-4 h-4 mr-2" /> Lihat Portofolio
+                  </a>
+                )}
               </div>
             )}
 
@@ -160,7 +165,7 @@ export function ProjectRoom({
               <div className="space-y-4">
                 <h3 className="font-semibold text-slate-900">Hasil Kerja Terbaru</h3>
                 <div className="p-4 bg-slate-50 border border-slate-100 rounded-lg space-y-3">
-                  <a href={latestSubmission.result_link} target="_blank" rel="noreferrer" className="flex items-center text-sm font-medium text-indigo-600 hover:underline">
+                  <a href={latestSubmission.result_link || undefined} target="_blank" rel="noreferrer" className="flex items-center text-sm font-medium text-indigo-600 hover:underline">
                     <FileText className="w-4 h-4 mr-2" /> Buka Lampiran / Link
                   </a>
                   {latestSubmission.submission_note && (

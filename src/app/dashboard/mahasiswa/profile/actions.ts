@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
-export async function updateBankAccountAction(prevState: any, formData: FormData) {
+export async function updateBankAccountAction(prevState: unknown, formData: FormData) {
   const session = await getSession();
   if (!session || session.role !== "MAHASISWA") {
     return { error: "Unauthorized" };

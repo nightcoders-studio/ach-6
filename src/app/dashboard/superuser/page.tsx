@@ -3,8 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { PayoutDialog } from "@/components/admin/PayoutDialog";
+import { VerifyButtons } from "@/components/admin/VerifyButtons";
 
 export default async function SuperuserDashboard() {
   const session = await getSession();
@@ -63,10 +63,7 @@ export default async function SuperuserDashboard() {
                       </div>
                       <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">Pending</Badge>
                     </div>
-                    <div className="flex gap-2 pt-2">
-                      <Button size="sm" className="w-full">Setujui</Button>
-                      <Button size="sm" variant="outline" className="w-full text-red-600 border-red-200 hover:bg-red-50">Tolak</Button>
-                    </div>
+                    <VerifyButtons id={mhs.id} type="MAHASISWA" />
                   </div>
                 ))
               )}
@@ -93,10 +90,7 @@ export default async function SuperuserDashboard() {
                       </div>
                       <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">Pending</Badge>
                     </div>
-                    <div className="flex gap-2 pt-2">
-                      <Button size="sm" className="w-full">Setujui</Button>
-                      <Button size="sm" variant="outline" className="w-full text-red-600 border-red-200 hover:bg-red-50">Tolak</Button>
-                    </div>
+                    <VerifyButtons id={mitra.id} type="MITRA" />
                   </div>
                 ))
               )}

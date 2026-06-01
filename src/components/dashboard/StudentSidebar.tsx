@@ -12,7 +12,6 @@ import {
   LogOut, 
   Menu, 
   X,
-  ShieldCheck,
   ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";

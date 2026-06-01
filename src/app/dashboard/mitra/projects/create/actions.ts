@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-export async function generateBriefAction(prevState: any, formData: FormData) {
+export async function generateBriefAction(prevState: unknown, formData: FormData) {
   const prompt = formData.get("prompt") as string;
   if (!prompt || prompt.length < 10) {
     return { error: "Ide project terlalu singkat. Berikan minimal 10 karakter." };
@@ -20,7 +20,7 @@ export async function generateBriefAction(prevState: any, formData: FormData) {
   }
 }
 
-export async function submitProjectAction(prevState: any, formData: FormData) {
+export async function submitProjectAction(prevState: unknown, formData: FormData) {
   const session = await getSession();
   if (!session || session.role !== "MITRA") {
     redirect("/auth/login");

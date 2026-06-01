@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, CheckCircle, UploadCloud, FileText } from "lucide-react";
+import { AlertCircle, UploadCloud, FileText } from "lucide-react";
 
 export default function OnboardingMahasiswaPage() {
   const [state, formAction, isPending] = useActionState(submitMahasiswaOnboarding, null);
@@ -82,6 +82,7 @@ export default function OnboardingMahasiswaPage() {
                 </div>
                 <input 
                   type="file" 
+                  name="ktm_file"
                   accept=".pdf,.jpg,.jpeg,.png"
                   className="hidden" 
                   ref={ktmInputRef}
@@ -91,7 +92,6 @@ export default function OnboardingMahasiswaPage() {
                     }
                   }}
                 />
-                <input type="hidden" name="ktm_url" value={ktmFile ? `https://storage.skillbridge.com/docs/${ktmFile.name}` : ""} />
               </div>
 
               <div className="space-y-2">
@@ -114,6 +114,7 @@ export default function OnboardingMahasiswaPage() {
                 </div>
                 <input 
                   type="file" 
+                  name="krs_file"
                   accept=".pdf,.jpg,.jpeg,.png"
                   className="hidden" 
                   ref={krsInputRef}
@@ -123,7 +124,6 @@ export default function OnboardingMahasiswaPage() {
                     }
                   }}
                 />
-                <input type="hidden" name="krs_url" value={krsFile ? `https://storage.skillbridge.com/docs/${krsFile.name}` : ""} />
               </div>
             </div>
 

@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     }
 
     // Check status directly to Midtrans Core API
-    const transactionStatus = await coreApi.transaction.status(payment.order_id);
+    const transactionStatus = await coreApi.transaction.status(payment.order_id) as Record<string, string>;
 
     if (
       transactionStatus.transaction_status === "capture" || 

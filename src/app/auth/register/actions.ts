@@ -1,13 +1,13 @@
 "use server";
 
-import { z } from "zod";
+
 import { registerMahasiswaSchema, registerMitraSchema } from "@/lib/zod";
 import { prisma } from "@/lib/prisma";
 import { createSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
 
-export async function registerMahasiswaAction(prevState: any, formData: FormData) {
+export async function registerMahasiswaAction(prevState: unknown, formData: FormData) {
   const data = Object.fromEntries(formData.entries());
   
   const validatedFields = registerMahasiswaSchema.safeParse({
@@ -72,7 +72,7 @@ export async function registerMahasiswaAction(prevState: any, formData: FormData
   redirect("/onboarding/mahasiswa");
 }
 
-export async function registerMitraAction(prevState: any, formData: FormData) {
+export async function registerMitraAction(prevState: unknown, formData: FormData) {
   const data = Object.fromEntries(formData.entries());
   
   const validatedFields = registerMitraSchema.safeParse({
