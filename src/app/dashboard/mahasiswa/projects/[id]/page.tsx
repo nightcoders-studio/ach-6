@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import ReactMarkdown from "react-markdown";
 import { ProjectRoom } from "@/components/project/ProjectRoom";
 
-export default async function MahasiswaProjectExecutionPage({ params }: { params: { id: string } }) {
+export default async function MahasiswaProjectExecutionPage(props: { params: Promise<{ id: string }> }) {
+  const { id } = await props.params;
   const session = await getSession();
   if (!session || session.role !== "MAHASISWA") {
     redirect("/auth/login");
@@ -19,7 +20,7 @@ export default async function MahasiswaProjectExecutionPage({ params }: { params
   if (!profile) redirect("/onboarding/mahasiswa");
 
   const project = await prisma.project.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       mitra: { include: { user: true } },
       scope: true,

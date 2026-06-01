@@ -120,6 +120,17 @@ export function ProjectRoom({
               </div>
             </div>
 
+            {projectStatus === "COMPLETED" && (
+              <div className="space-y-3 pb-4 border-b border-slate-100">
+                <a href={`/certificates/${projectId}`} className="flex items-center justify-center w-full py-2.5 px-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors text-sm shadow-sm">
+                  <FileText className="w-4 h-4 mr-2" /> Unduh Sertifikat
+                </a>
+                <a href={`/portfolios/${projectId}`} className="flex items-center justify-center w-full py-2.5 px-4 bg-white text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-colors text-sm border border-slate-200 shadow-sm">
+                  <FileText className="w-4 h-4 mr-2" /> Lihat Portofolio
+                </a>
+              </div>
+            )}
+
             {/* Mahasiswa View: Submit Work */}
             {role === "MAHASISWA" && projectStatus !== "COMPLETED" && (
               <div className="space-y-4">

@@ -1,16 +1,16 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Printer } from "lucide-react";
+import { PrintButton } from "@/components/PrintButton";
 import Image from "next/image";
 
-export default async function CertificatePage({ params }: { params: { projectId: string } }) {
+export default async function CertificatePage(props: { params: Promise<{ projectId: string }> }) {
+  const { projectId } = await props.params;
   const session = await getSession();
   if (!session) redirect("/auth/login");
 
   const project = await prisma.project.findUnique({
-    where: { id: params.projectId },
+    where: { id: projectId },
     include: {
       mitra: { include: { user: true } },
       assignments: { include: { student: { include: { user: true } } } },
@@ -39,9 +39,7 @@ export default async function CertificatePage({ params }: { params: { projectId:
     <div className="min-h-screen bg-slate-100 py-10 flex flex-col items-center">
       {/* Print Button Wrapper (Hidden on print) */}
       <div className="w-full max-w-[1000px] flex justify-end mb-4 px-4 print:hidden">
-        <Button onClick={() => window.print()} className="bg-slate-900 hover:bg-slate-800">
-          <Printer className="w-4 h-4 mr-2" /> Cetak / Simpan PDF
-        </Button>
+        <PrintButton />
       </div>
 
       {/* Certificate Container */}

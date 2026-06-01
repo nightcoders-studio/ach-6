@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { PayoutDialog } from "@/components/admin/PayoutDialog";
 
 export default async function SuperuserDashboard() {
   const session = await getSession();
@@ -22,10 +23,13 @@ export default async function SuperuserDashboard() {
   });
 
   const completedProjects = await prisma.project.findMany({
-    where: { status: "COMPLETED" },
+    where: { 
+      status: "COMPLETED",
+      payouts: { none: {} }
+    },
     include: { 
       mitra: { include: { user: true } },
-      assignments: { include: { student: { include: { user: true } } } },
+      assignments: { include: { student: { include: { user: true, bank_accounts: true } } } },
       payments: { where: { payment_status: "SECURED" } }
     }
   });
@@ -124,12 +128,16 @@ export default async function SuperuserDashboard() {
                     </div>
                     <div className="flex flex-col items-end gap-2 shrink-0">
                       <p className="font-bold text-indigo-600">Rp {payment.net_amount.toLocaleString("id-ID")}</p>
-                      <form action="/api/payout/simulate" method="POST">
-                        <input type="hidden" name="project_id" value={project.id} />
-                        <input type="hidden" name="student_id" value={assignment.student.id} />
-                        <input type="hidden" name="amount" value={payment.net_amount} />
-                        <Button type="submit" size="sm" className="bg-slate-900 hover:bg-slate-800">Simulasi Cairkan Dana</Button>
-                      </form>
+                      <PayoutDialog 
+                        projectId={project.id}
+                        projectTitle={project.title}
+                        studentId={assignment.student.id}
+                        studentName={assignment.student.user.name}
+                        amount={payment.net_amount}
+                        bankName={assignment.student.bank_accounts[0]?.bank_name}
+                        accountNumber={assignment.student.bank_accounts[0]?.account_number}
+                        accountHolder={assignment.student.bank_accounts[0]?.account_holder_name}
+                      />
                     </div>
                   </div>
                 );

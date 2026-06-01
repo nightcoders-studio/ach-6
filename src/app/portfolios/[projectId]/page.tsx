@@ -1,15 +1,16 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Printer, CheckCircle, ExternalLink } from "lucide-react";
+import { PrintButton } from "@/components/PrintButton";
+import { CheckCircle, ExternalLink } from "lucide-react";
 
-export default async function PortfolioPage({ params }: { params: { projectId: string } }) {
+export default async function PortfolioPage(props: { params: Promise<{ projectId: string }> }) {
+  const { projectId } = await props.params;
   const session = await getSession();
   if (!session) redirect("/auth/login");
 
   const project = await prisma.project.findUnique({
-    where: { id: params.projectId },
+    where: { id: projectId },
     include: {
       mitra: { include: { user: true } },
       assignments: { include: { student: { include: { user: true } } } },
@@ -35,9 +36,7 @@ export default async function PortfolioPage({ params }: { params: { projectId: s
   return (
     <div className="min-h-screen bg-slate-100 py-10 flex flex-col items-center font-sans">
       <div className="w-full max-w-[800px] flex justify-end mb-4 px-4 print:hidden">
-        <Button onClick={() => window.print()} className="bg-slate-900 hover:bg-slate-800">
-          <Printer className="w-4 h-4 mr-2" /> Cetak / Ekspor PDF
-        </Button>
+        <PrintButton />
       </div>
 
       <div className="w-full max-w-[800px] bg-white shadow-xl px-12 py-16 print:shadow-none print:w-full mx-4 space-y-8">

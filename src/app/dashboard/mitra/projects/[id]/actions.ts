@@ -63,7 +63,7 @@ export async function selectBidAction(formData: FormData) {
         data: {
           project_id: project_id,
           mitra_id: profile.id,
-          order_id: `PAY-${project_id}-${Date.now()}`,
+          order_id: `PAY-${project_id.slice(0, 8)}-${Date.now()}`,
           amount: total_amount,
           platform_fee: platform_fee,
           net_amount: winningBid.bid_price,

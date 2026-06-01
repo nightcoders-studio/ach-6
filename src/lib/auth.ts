@@ -2,7 +2,7 @@ import { jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-const secretKey = process.env.JWT_SECRET;
+const secretKey = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || "some-very-secret-key-at-least-32-chars-long";
 const key = new TextEncoder().encode(secretKey);
 
 export interface SessionPayload {

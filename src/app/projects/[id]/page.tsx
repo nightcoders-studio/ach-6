@@ -7,10 +7,11 @@ import { Calendar, DollarSign, Target, Briefcase } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { BidForm } from "./BidForm";
 
-export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
+export default async function ProjectDetailPage(props: { params: Promise<{ id: string }> }) {
+  const { id } = await props.params;
   const session = await getSession();
   const project = await prisma.project.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { mitra: { include: { user: true } }, scope: true },
   });
 

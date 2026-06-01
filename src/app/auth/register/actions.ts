@@ -35,35 +35,38 @@ export async function registerMahasiswaAction(prevState: any, formData: FormData
 
     const hashedPassword = await bcrypt.hash(validatedFields.data.password, 10);
 
-    const user = await prisma.user.create({
-      data: {
-        email: validatedFields.data.email,
-        password_hash: hashedPassword,
-        name: validatedFields.data.name,
-        phone: validatedFields.data.phone,
-        role: "MAHASISWA",
-        student_profile: {
-          create: {
-             nim: "",
-             university: "",
-             study_program: "",
-             semester: 1,
-             domicile: "",
+    await prisma.$transaction(async (tx) => {
+      const createdUser = await tx.user.create({
+        data: {
+          email: validatedFields.data.email,
+          password_hash: hashedPassword,
+          name: validatedFields.data.name,
+          phone: validatedFields.data.phone,
+          role: "MAHASISWA",
+          student_profile: {
+            create: {
+               nim: "",
+               university: "",
+               study_program: "",
+               semester: 1,
+               domicile: "",
+            }
           }
-        }
-      },
-    });
+        },
+      });
 
-    await createSession({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      is_verified: user.status === "VERIFIED",
-      name: user.name,
+      await createSession({
+        id: createdUser.id,
+        email: createdUser.email,
+        role: createdUser.role,
+        is_verified: createdUser.status === "VERIFIED",
+        name: createdUser.name,
+      });
     });
 
   } catch (error) {
-    return { message: "Terjadi kesalahan server." };
+    console.error("Registration error:", error);
+    return { message: "Terjadi kesalahan server saat mendaftar. Silakan coba lagi." };
   }
 
   redirect("/onboarding/mahasiswa");
@@ -100,34 +103,37 @@ export async function registerMitraAction(prevState: any, formData: FormData) {
 
     const hashedPassword = await bcrypt.hash(validatedFields.data.password, 10);
 
-    const user = await prisma.user.create({
-      data: {
-        email: validatedFields.data.email,
-        password_hash: hashedPassword,
-        name: validatedFields.data.responsible_person, // Using PIC name as user name
-        phone: validatedFields.data.phone,
-        role: "MITRA",
-        mitra_profile: {
-          create: {
-             mitra_name: validatedFields.data.mitra_name,
-             mitra_type: validatedFields.data.mitra_type,
-             responsible_person: validatedFields.data.responsible_person,
-             position: validatedFields.data.position,
+    await prisma.$transaction(async (tx) => {
+      const createdUser = await tx.user.create({
+        data: {
+          email: validatedFields.data.email,
+          password_hash: hashedPassword,
+          name: validatedFields.data.responsible_person, // Using PIC name as user name
+          phone: validatedFields.data.phone,
+          role: "MITRA",
+          mitra_profile: {
+            create: {
+               mitra_name: validatedFields.data.mitra_name,
+               mitra_type: validatedFields.data.mitra_type,
+               responsible_person: validatedFields.data.responsible_person,
+               position: validatedFields.data.position,
+            }
           }
-        }
-      },
-    });
+        },
+      });
 
-    await createSession({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      is_verified: user.status === "VERIFIED",
-      name: user.name,
+      await createSession({
+        id: createdUser.id,
+        email: createdUser.email,
+        role: createdUser.role,
+        is_verified: createdUser.status === "VERIFIED",
+        name: createdUser.name,
+      });
     });
 
   } catch (error) {
-    return { message: "Terjadi kesalahan server." };
+    console.error("Mitra registration error:", error);
+    return { message: "Terjadi kesalahan server saat mendaftar mitra. Silakan coba lagi." };
   }
 
   redirect("/onboarding/mitra");

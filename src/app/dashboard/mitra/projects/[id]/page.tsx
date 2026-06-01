@@ -9,7 +9,8 @@ import ReactMarkdown from "react-markdown";
 import { selectBidAction } from "./actions";
 import { ProjectRoom } from "@/components/project/ProjectRoom";
 
-export default async function ProjectBidsPage({ params }: { params: { id: string } }) {
+export default async function ProjectBidsPage(props: { params: Promise<{ id: string }> }) {
+  const { id } = await props.params;
   const session = await getSession();
   if (!session || session.role !== "MITRA") {
     redirect("/auth/login");
@@ -22,7 +23,7 @@ export default async function ProjectBidsPage({ params }: { params: { id: string
   if (!profile) redirect("/onboarding/mitra");
 
   const project = await prisma.project.findUnique({
-    where: { id: params.id, mitra_id: profile.id },
+    where: { id, mitra_id: profile.id },
     include: { 
       bids: { 
         include: { 

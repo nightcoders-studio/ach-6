@@ -3,7 +3,8 @@ import { getSession } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
 import { ClientPayment } from "./ClientPayment";
 
-export default async function PaymentPage({ params }: { params: { id: string } }) {
+export default async function PaymentPage(props: { params: Promise<{ id: string }> }) {
+  const { id } = await props.params;
   const session = await getSession();
   if (!session || session.role !== "MITRA") {
     redirect("/auth/login");
@@ -16,7 +17,7 @@ export default async function PaymentPage({ params }: { params: { id: string } }
   if (!profile) redirect("/onboarding/mitra");
 
   const payment = await prisma.payment.findFirst({
-    where: { project_id: params.id, mitra_id: profile.id },
+    where: { project_id: id, mitra_id: profile.id },
     include: { project: true }
   });
 
@@ -24,14 +25,14 @@ export default async function PaymentPage({ params }: { params: { id: string } }
 
   if (payment.payment_status === "SECURED") {
     // If already paid, redirect to project page or success page
-    redirect(`/dashboard/mitra/projects/${params.id}`);
+    redirect(`/dashboard/mitra/projects/${id}`);
   }
 
   return (
     <div className="min-h-screen bg-slate-50 p-6 md:p-12">
       <div className="max-w-3xl mx-auto">
         <ClientPayment 
-          projectId={params.id}
+          projectId={id}
           projectTitle={payment.project.title}
           netAmount={payment.net_amount}
           platformFee={payment.platform_fee}

@@ -9,24 +9,30 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const formData = await req.formData();
-    const project_id = formData.get("project_id") as string;
-    const student_id = formData.get("student_id") as string;
-    const amount = parseInt(formData.get("amount") as string, 10);
+    const { project_id, student_id, amount, bank_name, account_number } = await req.json();
 
     if (!project_id || !student_id || isNaN(amount)) {
       return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
 
-    // Since this is MVP, we simulate a successful payout instantly
+    // SIMULASI: Meniru delay koneksi ke Payment Gateway (seperti Midtrans Iris / Xendit)
+    await new Promise(resolve => setTimeout(resolve, 2500));
+
+    const refId = `TRX-${bank_name.toUpperCase().substring(0, 3)}-${Math.floor(100000 + Math.random() * 900000)}`;
+
+    const maskedAccount = account_number.length > 4 
+      ? account_number.slice(-4).padStart(account_number.length, "*")
+      : "****";
+
     await prisma.$transaction(async (tx) => {
       await tx.payout.create({
         data: {
           project_id,
           student_id,
           amount,
-          destination_bank: "BCA", // Mock
-          destination_account_masked: "1234xxxx56", // Mock
+          destination_bank: bank_name,
+          destination_account_masked: maskedAccount,
+          reference_id: refId,
           payout_status: "PAID_SUCCESSFULLY",
           processed_at: new Date(),
           paid_at: new Date(),
@@ -34,7 +40,7 @@ export async function POST(req: Request) {
       });
     });
 
-    return NextResponse.redirect(new URL("/dashboard/superuser?payout=success", req.url));
+    return NextResponse.json({ success: true, referenceId: refId });
   } catch (error) {
     console.error("Payout error:", error);
     return NextResponse.json({ error: "Gagal memproses pencairan dana" }, { status: 500 });

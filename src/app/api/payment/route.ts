@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { snap } from "@/lib/midtrans";
 import { getSession } from "@/lib/auth";
 
 export async function POST(req: Request) {
@@ -33,38 +32,52 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Payment already secured" }, { status: 400 });
     }
 
-    const parameters = {
-      transaction_details: {
-        order_id: payment.order_id,
-        gross_amount: payment.amount,
-      },
-      customer_details: {
-        first_name: mitraProfile.responsible_person,
-        email: session.email,
-        phone: "081234567890",
-      },
-      item_details: [
-        {
-          id: project_id,
-          price: payment.net_amount,
-          quantity: 1,
-          name: `Project: ${payment.project.title}`,
-        },
-        {
-          id: "FEE-3PERCENT",
-          price: payment.platform_fee,
-          quantity: 1,
-          name: "Biaya Layanan Platform (3%)",
+    // SIMULASI PEMBAYARAN: Langsung anggap sukses tanpa memanggil Midtrans
+    await prisma.$transaction(async (tx) => {
+      // 1. Update Payment
+      await tx.payment.update({
+        where: { id: payment.id },
+        data: {
+          payment_status: "SECURED",
+          transaction_id: `SIMULATED-${Date.now()}`,
+          payment_method: "simulator",
+          paid_at: new Date(),
         }
-      ]
-    };
+      });
 
-    const transaction = await snap.createTransaction(parameters);
-    
-    return NextResponse.json({ token: transaction.token, redirect_url: transaction.redirect_url });
+      // 2. Update Project
+      await tx.project.update({
+        where: { id: project_id },
+        data: { status: "PAYMENT_SECURED" },
+      });
+
+      // 3. Create ProjectAssignment (Ruang Kerja)
+      const acceptedBid = await tx.bid.findFirst({
+        where: { project_id, status: "ACCEPTED" },
+      });
+      
+      if (acceptedBid) {
+        const existingAssignment = await tx.projectAssignment.findFirst({
+          where: { project_id }
+        });
+        
+        if (!existingAssignment) {
+          await tx.projectAssignment.create({
+            data: {
+              project_id,
+              bid_id: acceptedBid.id,
+              student_id: acceptedBid.student_id,
+              status: "ACTIVE",
+            }
+          });
+        }
+      }
+    });
+
+    return NextResponse.json({ message: "Pembayaran berhasil disimulasikan" });
 
   } catch (error) {
-    console.error("Payment generation error:", error);
+    console.error("Payment simulation error:", error);
     return NextResponse.json({ message: "Internal server error" }, { status: 500 });
   }
 }
