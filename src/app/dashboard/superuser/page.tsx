@@ -35,8 +35,8 @@ export default async function SuperuserDashboard() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 p-8">
-      <div className="max-w-6xl mx-auto space-y-8">
+    <main className="min-h-screen p-6 lg:p-10 space-y-8 bg-slate-50 relative overflow-hidden">
+      <div className="max-w-6xl mx-auto space-y-8 relative z-10">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">Superuser Dashboard</h1>
           <p className="text-slate-500 mt-2">Kelola persetujuan verifikasi Mahasiswa dan Mitra.</p>
@@ -140,6 +140,6 @@ export default async function SuperuserDashboard() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </main>
   );
 }

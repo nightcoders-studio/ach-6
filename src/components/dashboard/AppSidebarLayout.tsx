@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import StudentSidebar from "./StudentSidebar";
 import MitraSidebar from "./MitraSidebar";
+import SuperuserSidebar from "./SuperuserSidebar";
 
 interface AppSidebarLayoutProps {
   session: {
@@ -58,6 +59,13 @@ export default function AppSidebarLayout({
         <MitraSidebar
           mitraName={mitraProfile.mitra_name}
           userEmail={mitraProfile.user.email}
+          logoutAction={logoutAction}
+        />
+      )}
+
+      {session.role === "SUPERUSER" && (
+        <SuperuserSidebar
+          userEmail={session.email}
           logoutAction={logoutAction}
         />
       )}
