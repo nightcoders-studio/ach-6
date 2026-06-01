@@ -12,13 +12,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    # For development we run Next.js in dev mode and mount the source directory.
-    command: npm start
     ports:
       - "3000:3000"
     environment:
@@ -27,8 +26,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - ./:/app:cached
     restart: unless-stopped
 
 volumes:
