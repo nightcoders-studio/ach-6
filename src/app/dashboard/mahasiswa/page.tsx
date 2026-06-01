@@ -68,9 +68,15 @@ export default async function MahasiswaDashboardPage() {
                           <Link href={`/certificates/${assignment.project.id}`}>
                             <Button size="sm" variant="outline" className="w-full sm:w-auto text-green-700 border-green-200 hover:bg-green-50">Sertifikat</Button>
                           </Link>
-                          <Link href={`/portfolios/${assignment.project.id}`}>
-                            <Button size="sm" variant="outline" className="w-full sm:w-auto text-indigo-700 border-indigo-200 hover:bg-indigo-50">Portfolio</Button>
-                          </Link>
+                          {profile.plan === "PRO" ? (
+                            <Link href={`/portfolios/${assignment.project.id}`}>
+                              <Button size="sm" variant="outline" className="w-full sm:w-auto text-indigo-700 border-indigo-200 hover:bg-indigo-50">Portfolio Pro</Button>
+                            </Link>
+                          ) : (
+                            <Button size="sm" variant="outline" disabled className="w-full sm:w-auto text-slate-400 border-slate-200" title="Upgrade ke paket PRO untuk Export Portfolio PDF">
+                              Portfolio (Pro)
+                            </Button>
+                          )}
                         </>
                       ) : (
                         <Link href={`/dashboard/mahasiswa/projects/${assignment.project.id}`}>

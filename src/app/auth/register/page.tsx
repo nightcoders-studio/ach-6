@@ -55,22 +55,22 @@ export default function RegisterPage() {
               <>
                 <div className="space-y-2">
                   <Label htmlFor="name">Nama Lengkap</Label>
-                  <Input id="name" name="name" placeholder="John Doe" disabled={isPending} />
+                  <Input id="name" name="name" placeholder="John Doe" disabled={isPending} required className={mhsState?.errors?.name ? "border-red-500" : ""} />
                   {mhsState?.errors?.name && <p className="text-sm text-red-500">{mhsState.errors.name[0]}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email Kampus / Pribadi</Label>
-                  <Input id="email" name="email" type="email" placeholder="email@kampus.ac.id" disabled={isPending} />
+                  <Input id="email" name="email" type="email" placeholder="email@kampus.ac.id" disabled={isPending} required className={mhsState?.errors?.email ? "border-red-500" : ""} />
                   {mhsState?.errors?.email && <p className="text-sm text-red-500">{mhsState.errors.email[0]}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Nomor WhatsApp</Label>
-                  <Input id="phone" name="phone" placeholder="08123456789" disabled={isPending} />
+                  <Input id="phone" name="phone" placeholder="08123456789" disabled={isPending} required className={mhsState?.errors?.phone ? "border-red-500" : ""} />
                   {mhsState?.errors?.phone && <p className="text-sm text-red-500">{mhsState.errors.phone[0]}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>
-                  <Input id="password" name="password" type="password" disabled={isPending} />
+                  <Input id="password" name="password" type="password" disabled={isPending} required className={mhsState?.errors?.password ? "border-red-500" : ""} />
                   {mhsState?.errors?.password && <p className="text-sm text-red-500">{mhsState.errors.password[0]}</p>}
                 </div>
               </>
@@ -78,37 +78,37 @@ export default function RegisterPage() {
               <>
                 <div className="space-y-2">
                   <Label htmlFor="mitra_name">Nama Instansi / Usaha</Label>
-                  <Input id="mitra_name" name="mitra_name" placeholder="PT Contoh Sukses" disabled={isPending} />
+                  <Input id="mitra_name" name="mitra_name" placeholder="PT Contoh Sukses" disabled={isPending} required className={mitraState?.errors?.mitra_name ? "border-red-500" : ""} />
                   {mitraState?.errors?.mitra_name && <p className="text-sm text-red-500">{mitraState.errors.mitra_name[0]}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="mitra_type">Jenis Instansi</Label>
-                  <Input id="mitra_type" name="mitra_type" placeholder="UMKM, Startup, Kampus" disabled={isPending} />
+                  <Input id="mitra_type" name="mitra_type" placeholder="UMKM, Startup, Kampus" disabled={isPending} required className={mitraState?.errors?.mitra_type ? "border-red-500" : ""} />
                   {mitraState?.errors?.mitra_type && <p className="text-sm text-red-500">{mitraState.errors.mitra_type[0]}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="responsible_person">Nama Penanggung Jawab</Label>
-                  <Input id="responsible_person" name="responsible_person" placeholder="Jane Doe" disabled={isPending} />
+                  <Input id="responsible_person" name="responsible_person" placeholder="Jane Doe" disabled={isPending} required className={mitraState?.errors?.responsible_person ? "border-red-500" : ""} />
                   {mitraState?.errors?.responsible_person && <p className="text-sm text-red-500">{mitraState.errors.responsible_person[0]}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="position">Jabatan</Label>
-                  <Input id="position" name="position" placeholder="Owner / Manager" disabled={isPending} />
+                  <Input id="position" name="position" placeholder="Owner / Manager" disabled={isPending} required className={mitraState?.errors?.position ? "border-red-500" : ""} />
                   {mitraState?.errors?.position && <p className="text-sm text-red-500">{mitraState.errors.position[0]}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email Bisnis</Label>
-                  <Input id="email" name="email" type="email" placeholder="contact@bisnis.com" disabled={isPending} />
+                  <Input id="email" name="email" type="email" placeholder="contact@bisnis.com" disabled={isPending} required className={mitraState?.errors?.email ? "border-red-500" : ""} />
                   {mitraState?.errors?.email && <p className="text-sm text-red-500">{mitraState.errors.email[0]}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Nomor WhatsApp PIC</Label>
-                  <Input id="phone" name="phone" placeholder="08123456789" disabled={isPending} />
+                  <Input id="phone" name="phone" placeholder="08123456789" disabled={isPending} required className={mitraState?.errors?.phone ? "border-red-500" : ""} />
                   {mitraState?.errors?.phone && <p className="text-sm text-red-500">{mitraState.errors.phone[0]}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>
-                  <Input id="password" name="password" type="password" disabled={isPending} />
+                  <Input id="password" name="password" type="password" disabled={isPending} required className={mitraState?.errors?.password ? "border-red-500" : ""} />
                   {mitraState?.errors?.password && <p className="text-sm text-red-500">{mitraState.errors.password[0]}</p>}
                 </div>
               </>

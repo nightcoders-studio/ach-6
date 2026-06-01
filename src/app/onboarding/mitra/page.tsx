@@ -1,15 +1,17 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState, useRef } from "react";
 import { submitMitraOnboarding } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, UploadCloud } from "lucide-react";
+import { AlertCircle, CheckCircle, UploadCloud, FileText } from "lucide-react";
 
 export default function OnboardingMitraPage() {
   const [state, formAction, isPending] = useActionState(submitMitraOnboarding, null);
+  const [nibFile, setNibFile] = useState<File | null>(null);
+  const nibInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-12">
@@ -67,11 +69,34 @@ export default function OnboardingMitraPage() {
 
               <div className="space-y-2">
                 <Label>Scan Dokumen NIB (Jika ada NIB)</Label>
-                <div className="border-2 border-dashed border-slate-200 rounded-lg p-6 flex flex-col items-center justify-center text-slate-500 hover:bg-slate-50 transition-colors cursor-pointer">
-                  <UploadCloud className="w-8 h-8 mb-2 text-slate-400" />
-                  <span className="text-sm">Klik untuk upload (simulasi)</span>
+                <div 
+                  onClick={() => nibInputRef.current?.click()}
+                  className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center transition-colors cursor-pointer ${nibFile ? "border-green-400 bg-green-50 text-green-700" : "border-slate-200 text-slate-500 hover:bg-slate-50"}`}
+                >
+                  {nibFile ? (
+                    <>
+                      <FileText className="w-8 h-8 mb-2 text-green-500" />
+                      <span className="text-sm font-medium">{nibFile.name}</span>
+                    </>
+                  ) : (
+                    <>
+                      <UploadCloud className="w-8 h-8 mb-2 text-slate-400" />
+                      <span className="text-sm">Klik untuk memilih file PDF/JPG</span>
+                    </>
+                  )}
                 </div>
-                <input type="hidden" name="nib_file_url" value="" />
+                <input 
+                  type="file" 
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  className="hidden" 
+                  ref={nibInputRef}
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      setNibFile(e.target.files[0]);
+                    }
+                  }}
+                />
+                <input type="hidden" name="nib_file_url" value={nibFile ? `https://storage.skillbridge.com/docs/${nibFile.name}` : ""} />
               </div>
             </div>
 
